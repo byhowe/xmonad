@@ -16,6 +16,7 @@ import Data.Maybe (fromJust, isJust)
 import System.Exit (ExitCode (..))
 import System.IO (hClose, hFlush, hGetLine, hPutStr)
 import System.Process
+import XMonad (installSignalHandlers, uninstallSignalHandlers)
 
 data Dmenu =
   Dmenu
@@ -93,7 +94,9 @@ constructArgs c =
 dmenuRun :: MonadIO m => Dmenu -> m ()
 dmenuRun c =
   liftIO $ do
+    uninstallSignalHandlers
     output <- readProcess "dmenu_path" [] []
+    installSignalHandlers
     dmenu c (words output) $ \case
       Nothing -> return ()
       Just a -> do
