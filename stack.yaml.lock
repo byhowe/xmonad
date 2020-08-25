@@ -3,7 +3,18 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    name: xmonad-contrib
+    version: '0.16'
+    git: https://github.com/xmonad/xmonad-contrib.git
+    pantry-tree:
+      size: 20817
+      sha256: 13b63999eb7ff1241681872e5621df8fa22a43f53d4d759e9d89392d2f5c2622
+    commit: 51bc4f8c2f39c331c59a09b090b313ce2ac8c771
+  original:
+    git: https://github.com/xmonad/xmonad-contrib.git
+    commit: 51bc4f8c2f39c331c59a09b090b313ce2ac8c771
 snapshots:
 - completed:
     size: 532383
