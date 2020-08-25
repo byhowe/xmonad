@@ -27,7 +27,7 @@ alacritty =
   Terminal
     { command = "alacritty"
     , classFlag = "--class"
-    , commandFlag = "e"
+    , commandFlag = "-e"
     , cls = Nothing
     , cmd = Nothing
     }

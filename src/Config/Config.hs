@@ -241,7 +241,7 @@ config =
       , XMonad.clickJustFocuses = True
       , XMonad.clientMask = clientMask
       , XMonad.rootMask = rootMask
-      , XMonad.handleExtraArgs = undefined
+      , XMonad.handleExtraArgs = \_ c -> return c
       }
   where
     layoutHook =
