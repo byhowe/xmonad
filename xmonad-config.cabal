@@ -29,6 +29,7 @@ library
   exposed-modules:
       Config.Config
     , Config.Operations
+    , Config.Fullscreen
     , Config.Util
     , Config.Terminal
     , Config.Dmenu

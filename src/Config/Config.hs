@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Config.Config
   ( config
@@ -12,6 +11,7 @@ import Config.Dmenu
     , dmenuRun
     )
 import Config.Font (Font (..), fontDefaults)
+import Config.Fullscreen (fullscreen)
 import Config.Operations (recompileRestart, restart)
 import Config.Scratchpad
     (Scratchpads, floatScratchpad, scratchpadTerminal, setupScratchpads)
@@ -30,14 +30,11 @@ import XMonad (XConfig)
 import qualified XMonad (XConfig (..))
 import XMonad.Actions.CycleWS (nextScreen)
 import XMonad.Actions.NoBorders (toggleBorder)
-import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
+import XMonad.Hooks.EwmhDesktops (ewmh)
 import XMonad.Hooks.ManageDocks
     (ToggleStruts (..), avoidStruts, docks, manageDocks)
 import XMonad.Hooks.ManageHelpers (doCenterFloat, isDialog, isInProperty)
 import XMonad.Hooks.SetWMName (setWMName)
-import XMonad.Layout.Fullscreen
-    (FullscreenFull, fullscreenEventHook, fullscreenFull, fullscreenManageHook)
-import XMonad.Layout.LayoutModifier (ModifiedLayout)
 import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.Renamed (Rename (..), renamed)
 import XMonad.Layout.ResizableTile (ResizableTall (..))
@@ -213,18 +210,6 @@ rootMask =
   leaveWindowMask .|.
   structureNotifyMask .|.
   buttonPressMask
-
-fullscreen ::
-     LayoutClass l Window
-  => XConfig l
-  -> XConfig (ModifiedLayout FullscreenFull l)
-fullscreen c =
-  ewmhFullscreen $
-  c
-    { XMonad.layoutHook = fullscreenFull $ XMonad.layoutHook c
-    , XMonad.handleEventHook = XMonad.handleEventHook c <+> fullscreenEventHook
-    , XMonad.manageHook = XMonad.manageHook c <+> fullscreenManageHook
-    }
 
 config =
   setupScratchpads scratchpads scratchpadMask $
