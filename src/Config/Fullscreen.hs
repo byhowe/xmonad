@@ -11,10 +11,10 @@ import XMonad.Hooks.EwmhDesktops (ewmhFullscreen)
 import XMonad.Layout.Fullscreen
     ( FullscreenFull
     , FullscreenMessage (..)
+    , fullscreenEventHook
     , fullscreenFull
     , fullscreenManageHook
     )
-import XMonad.Layout.Fullscreen (fullscreenEventHook)
 import XMonad.Layout.LayoutModifier (LayoutModifier (..), ModifiedLayout (..))
 
 data Fullscreen w =
@@ -48,7 +48,7 @@ fullscreen c =
   ewmhFullscreen $
   c
     { XMonad.layoutHook =
-        (ModifiedLayout Fullscreen) $ fullscreenFull $ XMonad.layoutHook c
+        ModifiedLayout Fullscreen $ fullscreenFull $ XMonad.layoutHook c
     , XMonad.handleEventHook = XMonad.handleEventHook c <+> fullscreenEventHook
     , XMonad.manageHook = XMonad.manageHook c <+> fullscreenManageHook
     }

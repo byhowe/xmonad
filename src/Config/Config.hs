@@ -243,7 +243,7 @@ config =
       where
         tallLayout =
           renamed [Replace "tall"] $
-          leaveSpace 2 $ ResizableTall nmaster delta ratio []
+          leaveSpace 3 $ ResizableTall nmaster delta ratio []
         mirrorTallLayout = renamed [Replace "mirror tall"] $ Mirror tallLayout
         monocleLayout = renamed [Replace "monocle"] $ noBorders Full
         floatingLayout = renamed [Replace "float"] simplestFloat
@@ -251,4 +251,4 @@ config =
         ratio = 1 / 2
         delta = 3 / 100
         leaveSpace i =
-          spacingRaw True (Border i i i i) True (Border i i i i) True
+          spacingRaw False (Border i i i i) True (Border i i i i) True
