@@ -1,5 +1,6 @@
 module Config.Util
   ( getConfigDir
+  , fork
   , run
   , run'
   ) where
@@ -10,8 +11,11 @@ import System.Posix.Env (getEnv)
 import System.Process
 import XMonad hiding (recompile, restart)
 
+fork :: MonadIO m => IO a -> m ()
+fork = void . xfork . void
+
 run :: MonadIO m => CreateProcess -> m ()
-run = void . liftIO . createProcess
+run = fork . createProcess
 
 run' :: MonadIO m => [String] -> m ()
 run' c = run . proc (head c) $ tail c

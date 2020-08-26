@@ -7,19 +7,24 @@ module Config.Config
 
 import Config.ColorScheme (ColorScheme (..), snazzyCS)
 import Config.Dmenu
-    (Dmenu (height, ignoreCase, prompt), dmenuDefaults', dmenuRun)
+    ( Dmenu (center, height, ignoreCase, lineCount, prompt)
+    , dmenuDefaults'
+    , dmenuRun
+    )
 import Config.Font (Font (..), fontDefaults)
 import Config.Operations (recompileRestart, restart)
 import Config.Scratchpad
     (Scratchpads, floatScratchpad, scratchpadTerminal, setupScratchpads)
 import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
 import Config.Util (run')
+import Config.WindowBringer (decorateName, gotoWindow)
 import qualified Data.Map as M
 import Data.Monoid (All (..))
 import Graphics.X11.ExtraTypes
 import Graphics.X11.Xlib hiding (Font)
 import Graphics.X11.Xrandr (xrrSelectInput)
 import System.Exit (exitSuccess)
+import Text.Printf (printf)
 import XMonad hiding (Font, XConfig (..), config, restart)
 import XMonad (XConfig)
 import qualified XMonad (XConfig (..))
@@ -83,6 +88,9 @@ keys _ =
   , ((modm, xK_e), run' editor)
   -- menu
   , ((modm, xK_r), dmenuRun dmenu)
+  , ( (modm .|. shiftMask, xK_w)
+    , gotoWindow dmenu {center = True, lineCount = Just 12} $
+      decorateName $ \n ws -> printf "%s : %s" ws n)
     -- navigation
   , ((modm .|. shiftMask, xK_q), kill)
   , ((modm .|. shiftMask, xK_Tab), nextScreen)

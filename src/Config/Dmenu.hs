@@ -6,17 +6,17 @@ module Config.Dmenu
   , dmenuDefaults'
   , dmenu
   , dmenuRun
+  , dmenuMap
   ) where
 
 import Config.ColorScheme (ColorScheme (..))
 import Config.Font (Font, getXft)
-import Control.Exception (bracket)
+import Config.Util (fork)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import qualified Data.Map as M
 import Data.Maybe (fromJust, isJust)
-import System.Exit (ExitCode (..))
-import System.IO (hClose, hFlush, hGetLine, hPutStr)
 import System.Process
-import XMonad (installSignalHandlers, uninstallSignalHandlers)
+import XMonad.Util.Run (runProcessWithInput)
 
 data Dmenu =
   Dmenu
@@ -93,33 +93,24 @@ constructArgs c =
 
 dmenuRun :: MonadIO m => Dmenu -> m ()
 dmenuRun c =
-  liftIO $ do
-    uninstallSignalHandlers
+  fork $ do
     output <- readProcess "dmenu_path" [] []
-    installSignalHandlers
     dmenu c (words output) $ \case
       Nothing -> return ()
       Just a -> do
         _ <- spawnCommand a
         return ()
 
+dmenuMap :: MonadIO m => Dmenu -> M.Map String a -> m (Maybe a)
+dmenuMap c m =
+  dmenu c (M.keys m) $ \case
+    Just s -> return (M.lookup s m)
+    Nothing -> return Nothing
+
 dmenu :: MonadIO m => Dmenu -> [String] -> (Maybe String -> IO r) -> m r
 dmenu c input action =
   liftIO $ do
-    (Just hin, Just hout, _, h) <-
-      createProcess
-        (proc "dmenu" $ constructArgs c)
-          {std_in = CreatePipe, std_out = CreatePipe}
-    hPutStr hin $ unlines input
-    hFlush hin
-    hClose hin
-    status <- waitForProcess h
-    bracket
-      (return hout)
-      hClose
-      (\pout ->
-         if status == ExitSuccess
-           then do
-             output <- hGetLine pout
-             action $ Just output
-           else action Nothing)
+    out <- runProcessWithInput "dmenu" (constructArgs c) (unlines input)
+    if out == "\n"
+      then action Nothing
+      else action (Just . head . lines $ out)

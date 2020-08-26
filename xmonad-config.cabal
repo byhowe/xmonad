@@ -32,6 +32,7 @@ library
     , Config.Util
     , Config.Terminal
     , Config.Dmenu
+    , Config.WindowBringer
     , Config.ColorScheme
     , Config.Font
     , Config.Scratchpad
