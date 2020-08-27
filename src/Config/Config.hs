@@ -7,10 +7,10 @@ module Config.Config
 import Config.ColorScheme (ColorScheme (..), snazzyCS)
 import Config.Dmenu
     ( Dmenu (center, height, ignoreCase, lineCount, prompt)
-    , dmenuDefaults'
+    , dmenuDefaults
     , dmenuRun
     )
-import Config.Font (Font (..), fontDefaults)
+import Config.Font (Font (..))
 import Config.Fullscreen (fullscreen)
 import Config.Operations (recompileRestart, restart)
 import Config.Scratchpad
@@ -18,6 +18,7 @@ import Config.Scratchpad
 import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
 import Config.Util (run')
 import Config.WindowBringer (decorateName, gotoWindow)
+import Data.Default (Default (..))
 import qualified Data.Map as M
 import Data.Monoid (All (..))
 import Graphics.X11.ExtraTypes
@@ -25,7 +26,7 @@ import Graphics.X11.Xlib hiding (Font)
 import Graphics.X11.Xrandr (xrrSelectInput)
 import System.Exit (exitSuccess)
 import Text.Printf (printf)
-import XMonad hiding (Font, XConfig (..), config, restart)
+import XMonad hiding (Default (..), Font, XConfig (..), config, restart)
 import XMonad (XConfig)
 import qualified XMonad (XConfig (..))
 import XMonad.Actions.CycleWS (nextScreen)
@@ -44,7 +45,7 @@ import qualified XMonad.StackSet as W
 import XMonad.Util.Cursor (setDefaultCursor)
 
 font :: Font
-font = fontDefaults {fontName = "mononoki Nerd Font"}
+font = def {fontName = "mononoki Nerd Font"}
 
 cs :: ColorScheme
 cs = snazzyCS
@@ -57,7 +58,7 @@ tmux = terminal {cmd = Just ["tmux", "-u"]}
 
 dmenu :: Dmenu
 dmenu =
-  (dmenuDefaults' font cs)
+  (dmenuDefaults font cs)
     {ignoreCase = True, prompt = Just ">> ", height = Just 17}
 
 browser :: [String]

@@ -3,7 +3,6 @@
 module Config.Dmenu
   ( Dmenu(..)
   , dmenuDefaults
-  , dmenuDefaults'
   , dmenu
   , dmenuRun
   , dmenuMap
@@ -13,6 +12,7 @@ import Config.ColorScheme (ColorScheme (..))
 import Config.Font (Font, getXft)
 import Config.Util (fork)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Default (Default (..))
 import qualified Data.Map as M
 import Data.Maybe (fromJust, isJust)
 import System.Process
@@ -37,28 +37,28 @@ data Dmenu =
     , selectedForeground :: Maybe String
     }
 
-dmenuDefaults :: Dmenu
-dmenuDefaults =
-  Dmenu
-    { font = Nothing
-    , bottom = False
-    , center = False
-    , hidden = False
-    , ignoreCase = False
-    , prompt = Nothing
-    , lineCount = Nothing
-    , height = Nothing
-    , borderWidth = Nothing
+instance Default Dmenu where
+  def =
+    Dmenu
+      { font = Nothing
+      , bottom = False
+      , center = False
+      , hidden = False
+      , ignoreCase = False
+      , prompt = Nothing
+      , lineCount = Nothing
+      , height = Nothing
+      , borderWidth = Nothing
     -- color
-    , background = Nothing
-    , foreground = Nothing
-    , selectedBackground = Nothing
-    , selectedForeground = Nothing
-    }
+      , background = Nothing
+      , foreground = Nothing
+      , selectedBackground = Nothing
+      , selectedForeground = Nothing
+      }
 
-dmenuDefaults' :: Font -> ColorScheme -> Dmenu
-dmenuDefaults' fn cs =
-  dmenuDefaults
+dmenuDefaults :: Font -> ColorScheme -> Dmenu
+dmenuDefaults fn cs =
+  def
     { font = Just fn
     -- color
     , background = Just $ base00 cs

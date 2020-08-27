@@ -1,9 +1,9 @@
 module Config.Font
   ( Font(..)
-  , fontDefaults
   , getXft
   ) where
 
+import Data.Default (Default (..))
 import Data.List (intercalate)
 
 data Font =
@@ -15,15 +15,15 @@ data Font =
     , fontHinting   :: Bool
     }
 
-fontDefaults :: Font
-fontDefaults =
-  Font
-    { fontName = "monospace"
-    , fontSize = 12
-    , fontWeight = "regular"
-    , fontAntiAlias = True
-    , fontHinting = True
-    }
+instance Default Font where
+  def =
+    Font
+      { fontName = "monospace"
+      , fontSize = 12
+      , fontWeight = "regular"
+      , fontAntiAlias = True
+      , fontHinting = True
+      }
 
 getXft :: Font -> String
 getXft f =

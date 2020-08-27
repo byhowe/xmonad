@@ -3,6 +3,8 @@ module Config.ColorScheme
   , snazzyCS
   ) where
 
+import Data.Default (Default (..))
+
 data ColorScheme =
   CS
     { base00 :: String
@@ -22,6 +24,9 @@ data ColorScheme =
     , base0E :: String
     , base0F :: String
     }
+
+instance Default ColorScheme where
+  def = snazzyCS
 
 snazzyCS :: ColorScheme
 snazzyCS =

@@ -7,6 +7,7 @@ module Config.Terminal
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Default (Default (..))
 import Data.Maybe (fromJust, isJust)
 import System.Directory (getTemporaryDirectory)
 import System.FilePath ((</>))
@@ -21,6 +22,9 @@ data Terminal =
     , cls         :: Maybe String
     , cmd         :: Maybe [String]
     }
+
+instance Default Terminal where
+  def = alacritty
 
 alacritty :: Terminal
 alacritty =
