@@ -1,18 +1,23 @@
 module Config.Util
   ( getConfigDir
   , fork
+  , forkPID
   , run
   , run'
   ) where
 
 import Control.Monad (void)
 import System.Directory
+import System.Posix (ProcessID)
 import System.Posix.Env (getEnv)
 import System.Process
 import XMonad hiding (recompile, restart)
 
+forkPID :: MonadIO m => IO a -> m ProcessID
+forkPID = xfork . void
+
 fork :: MonadIO m => IO a -> m ()
-fork = void . xfork . void
+fork = void . forkPID
 
 run :: MonadIO m => CreateProcess -> m ()
 run = fork . createProcess
