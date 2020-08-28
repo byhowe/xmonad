@@ -5,7 +5,9 @@ module Config.Config
   ) where
 
 import Config.Bar (Bars, WMRunnable (..), statusBars)
-import Config.BarPlugins.Net (Net (..))
+import qualified Config.BarPlugins.Net as Net (Net (..))
+import Config.BarPlugins.WMReader (wMReader)
+import qualified Config.BarPlugins.WMReader as WMReader (WMReader (..))
 import Config.ColorScheme (ColorScheme (..), snazzyCS)
 import Config.Dmenu
     ( Dmenu (center, height, ignoreCase, lineCount, prompt)
@@ -20,6 +22,7 @@ import Config.Scratchpad
 import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
 import Config.Util (run')
 import Config.WindowBringer (decorateName, gotoWindow)
+import Config.Xmobar (barForeachScreen, foreachScreen)
 import qualified Config.Xmobar as Bar (Xmobar (..))
 import Data.Default (Default (..))
 import qualified Data.Map as M
@@ -75,9 +78,7 @@ bar =
     , Bar.lowerOnStart = True
     , Bar.persistent = True
     , Bar.template =
-        " wmreader\
-
-      \}<fc=#B3AFC2>mpd</fc>{\
+        "}<fc=#B3AFC2>mpd</fc>{\
 
       \ <fc=#D7AFAF>\61820 kernel</fc>\
       \ <fc=#666666>|</fc> <fc=#FFB86C>%network%</fc>\
@@ -190,8 +191,20 @@ scratchpads =
   where
     centerFloat = floatScratchpad 0.9 0.9 0.95 0.95
 
-bars :: Bars
-bars = ([WMRun (def :: Net) {rate = 5}], [bar])
+bars :: X Bars
+bars = do
+  foreachBars <-
+    barForeachScreen
+      (\(S s) ->
+         bar {Bar.template = "%wmreader" ++ show s ++ "%" ++ Bar.template bar})
+  foreachReaders <-
+    foreachScreen
+      (\s ->
+         return $
+         WMRun $
+         (def :: WMReader.WMReader)
+           {WMReader.alias = "wmreader", WMReader.screenId = s})
+  return (WMRun (def :: Net.Net) {Net.rate = 5} : foreachReaders, foreachBars)
 
 logHook :: X ()
 logHook = return ()
@@ -236,6 +249,7 @@ randrSetup = do
   liftIO $ xrrSelectInput dpy root rrScreenChangeNotifyMask
 
 config =
+  wMReader $
   statusBars bars $
   setupScratchpads scratchpads scratchpadMask $
   fullscreen $

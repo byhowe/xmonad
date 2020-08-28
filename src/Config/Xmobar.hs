@@ -3,7 +3,8 @@ module Config.Xmobar
   , ChanReader(..)
   , xmobarToConfig
   , screen
-  , barForEachScreen
+  , foreachScreen
+  , barForeachScreen
   ) where
 
 import Config.Chan (Chan (..), readChan)
@@ -11,18 +12,16 @@ import Config.ColorScheme (ColorScheme (..))
 import Config.Font (Font, getXft)
 import Config.Util (getScreens)
 import Control.Monad (forever)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Default (Default (..))
 import Xmobar hiding (Config (..))
 import qualified Xmobar as Bar (Config (..))
 import XMonad (ScreenId (..), X)
-import XMonad.Hooks.DynamicLog (PP, xmobarPP)
 
 data Xmobar =
   Xmobar
     { font             :: Font
     , colorScheme      :: ColorScheme
-    , normalPP         :: PP
-    , focusedPP        :: PP
     , additionalFonts  :: [Font]
     , wmClass          :: String
     , wmName           :: String
@@ -52,8 +51,6 @@ instance Default Xmobar where
     Xmobar
       { font = def
       , colorScheme = def
-      , normalPP = xmobarPP
-      , focusedPP = xmobarPP
       , additionalFonts = []
       , wmClass = "xmobar"
       , wmName = "xmobar"
@@ -122,8 +119,15 @@ instance Exec ChanReader where
   alias (ChanReader _ a) = a
   start (ChanReader chan _) cb = forever $ readChan chan >>= cb
 
-barForEachScreen :: Xmobar -> X [Xmobar]
-barForEachScreen c = map (\s -> c {position = screen s c}) <$> getScreens
+foreachScreen :: MonadIO m => (ScreenId -> m a) -> m [a]
+foreachScreen m = mapM m =<< getScreens
+
+barForeachScreen :: (ScreenId -> Xmobar) -> X [Xmobar]
+barForeachScreen m =
+  foreachScreen
+    (\s ->
+       let c = m s
+        in return $ c {position = screen s c})
 
 screen :: ScreenId -> Xmobar -> XPosition
 screen (S s) c = OnScreen s $ position c

@@ -33,6 +33,7 @@ library
     , Config.Chan
     , Config.Bar
     , Config.BarPlugins.Net
+    , Config.BarPlugins.WMReader
     , Config.Xmobar
     , Config.DynamicLog
     , Config.Util

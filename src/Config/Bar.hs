@@ -17,6 +17,7 @@ import Data.List (findIndex, isPrefixOf, partition, tails)
 import Data.Maybe (isJust)
 import Data.Monoid (All (All))
 import Graphics.X11.Xlib.Extras
+import System.IO.Error (catchIOError)
 import System.Posix (ProcessID, forkProcess, killProcess, signalProcess)
 import Xmobar (Runnable (..), xmobar)
 import XMonad (ExtensionClass (..), X, XConfig (..), liftIO)
@@ -33,6 +34,8 @@ class WMExec e where
     newE <- iteration e cb
     threadDelay $ rate e * 100000
     start newE cb
+  initialize :: e -> (String -> IO ()) -> X ()
+  initialize _ _ = return ()
 
 data WMRunnable =
   forall e. (WMExec e) =>
@@ -52,10 +55,12 @@ newtype BarInfo =
 instance ExtensionClass BarInfo where
   initialValue = Bars {pids = []}
 
-addIfExists :: WMRunnable -> [Xmobar] -> IO ([Xmobar], ProcessID)
+addIfExists :: WMRunnable -> [Xmobar] -> X ([Xmobar], ProcessID)
 addIfExists (WMRun r) bars = do
-  (chans, addedBars) <- addChans partitioned
-  pid <- forkProcess $ start r $ \s -> forM_ chans (`writeChan` s)
+  (chans, addedBars) <- liftIO $ addChans partitioned
+  let cb = \s -> forM_ chans (`writeChan` s)
+  initialize r cb
+  pid <- liftIO . forkProcess $ start r cb
   return (addedBars, pid)
   where
     addChans :: ([Xmobar], [Xmobar]) -> IO ([Chan], [Xmobar])
@@ -78,29 +83,35 @@ addIfExists (WMRun r) bars = do
         bars
 
 cleanupBars :: X ()
-cleanupBars = (liftIO . mapM_ (signalProcess killProcess)) . pids =<< XS.get
+cleanupBars =
+  (liftIO .
+   mapM_ (\p -> catchIOError (signalProcess killProcess p) $ \_ -> return ())) .
+  pids =<<
+  XS.get
 
 statusBarsEventHook :: Event -> X All
 statusBarsEventHook RRScreenChangeNotifyEvent {} =
   cleanupBars >> return (All True)
 statusBarsEventHook _ = return $ All True
 
-startBars :: Bars -> X ()
-startBars (runnables, bars) = startPids >>= XS.put . Bars
+startBars :: X Bars -> X ()
+startBars xBars = do
+  (runnables, bars) <- xBars
+  let startPids :: X [ProcessID]
+      startPids = do
+        (toStart, ps) <- addChans runnables bars []
+        barPs <- forM toStart $ \c -> forkPID . xmobar $ xmobarToConfig c
+        return $ barPs ++ ps
+  startPids >>= XS.put . Bars
   where
-    startPids :: X [ProcessID]
-    startPids = do
-      (toStart, ps) <- liftIO $ addChans runnables bars []
-      barPs <- forM toStart $ \c -> forkPID . xmobar $ xmobarToConfig c
-      return $ barPs ++ ps
     addChans ::
-         [WMRunnable] -> [Xmobar] -> [ProcessID] -> IO ([Xmobar], [ProcessID])
+         [WMRunnable] -> [Xmobar] -> [ProcessID] -> X ([Xmobar], [ProcessID])
     addChans [] b ps = return (b, ps)
     addChans (r:rs) b ps = do
       (added, pid) <- addIfExists r b
       addChans rs added $ pid : ps
 
-statusBars :: Bars -> XConfig l -> XConfig l
+statusBars :: X Bars -> XConfig l -> XConfig l
 statusBars bars c =
   c
     { startupHook = startupHook c >> liftIO cleanupPipes >> startBars bars
