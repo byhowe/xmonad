@@ -42,9 +42,13 @@ packages:
 extra-deps:
   - git: https://github.com/xmonad/xmonad-contrib.git
     commit: 51bc4f8c2f39c331c59a09b090b313ce2ac8c771
+  - xmobar-0.36
 
 # Override default flag values for local packages and extra-deps
-# flags: {}
+flags:
+  xmobar:
+    with_threaded: true
+    with_xft: true
 
 # Extra package databases containing global packages
 # extra-package-dbs: []

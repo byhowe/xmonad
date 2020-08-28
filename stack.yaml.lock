@@ -15,6 +15,13 @@ packages:
   original:
     git: https://github.com/xmonad/xmonad-contrib.git
     commit: 51bc4f8c2f39c331c59a09b090b313ce2ac8c771
+- completed:
+    hackage: xmobar-0.36@sha256:93ba52b821c6103a9a85ba3acab34fbc5b5cff71d4a1a1d20ea3d1d067a2fc68,11919
+    pantry-tree:
+      size: 6404
+      sha256: 178e322a2fdf41ea4a56bd0cd4d3e7dc8e9e6a99fabadedf5eeb4d20df459bc0
+  original:
+    hackage: xmobar-0.36
 snapshots:
 - completed:
     size: 532383

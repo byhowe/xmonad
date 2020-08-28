@@ -6,6 +6,7 @@ module Config.Operations
   , sendReplace
   ) where
 
+import Config.Bar (cleanupBars)
 import Config.Terminal
 import Config.Util
 import Control.Monad (when)
@@ -53,7 +54,7 @@ recompile term = do
     recompileProcess dir = (proc "stack" ["install"]) {cwd = Just dir}
 
 restart :: X ()
-restart = liftIO getProgName >>= (`O.restart` True)
+restart = cleanupBars >> liftIO getProgName >>= (`O.restart` True)
 
 recompileRestart :: Terminal -> X ()
 recompileRestart t = liftIO (recompile . Just $ t) >>= (`when` restart)

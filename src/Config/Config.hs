@@ -4,6 +4,8 @@ module Config.Config
   ( config
   ) where
 
+import Config.Bar (Bars, WMRunnable (..), statusBars)
+import Config.BarPlugins (Interface (..), Net (..))
 import Config.ColorScheme (ColorScheme (..), snazzyCS)
 import Config.Dmenu
     ( Dmenu (center, height, ignoreCase, lineCount, prompt)
@@ -18,6 +20,7 @@ import Config.Scratchpad
 import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
 import Config.Util (run')
 import Config.WindowBringer (decorateName, gotoWindow)
+import Config.Xmobar (Xmobar (template))
 import Data.Default (Default (..))
 import qualified Data.Map as M
 import Data.Monoid (All (..))
@@ -160,6 +163,10 @@ scratchpads =
   where
     centerFloat = floatScratchpad 0.9 0.9 0.95 0.95
 
+bars :: Bars
+bars =
+  ([WMRun $ Net "network" $ Exclude ["lo"]], [def {template = "%network%"}])
+
 logHook :: X ()
 logHook = return ()
 
@@ -213,6 +220,7 @@ rootMask =
   buttonPressMask
 
 config =
+  statusBars bars $
   setupScratchpads scratchpads scratchpadMask $
   fullscreen $
   ewmh $

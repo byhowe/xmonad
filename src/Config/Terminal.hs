@@ -6,6 +6,7 @@ module Config.Terminal
   , printToTerminal
   ) where
 
+import Config.Util (generateRandomString)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Default (Default (..))
 import Data.Maybe (fromJust, isJust)
@@ -57,7 +58,8 @@ printToTerminal :: MonadIO m => Terminal -> String -> m ()
 printToTerminal t s =
   liftIO $ do
     temp <- getTemporaryDirectory
-    let file = temp </> "xmonad-terminal"
+    suf <- generateRandomString 6
+    let file = temp </> "xmonad-terminal-" ++ suf
     writeFile file s
     spawnTerminal $
       t {cmd = Just ["sh", "-c", printf "cat %s && read _ && rm %s" file file]}
