@@ -11,6 +11,7 @@ module Config.Bar
 import Config.Chan (Chan (..), cleanupPipes, dupChan, newChan, writeChan)
 import Config.Util (forkPID)
 import Config.Xmobar (ChanReader (..), Xmobar (..), xmobarToConfig)
+import Control.Concurrent (threadDelay)
 import Control.Monad (forM, forM_)
 import Data.List (findIndex, isPrefixOf, partition, tails)
 import Data.Maybe (isJust)
@@ -23,7 +24,15 @@ import qualified XMonad.Util.ExtensibleState as XS
 
 class WMExec e where
   alias :: e -> String
+  rate :: e -> Int
+  rate _ = 10
+  iteration :: e -> (String -> IO ()) -> IO e
+  iteration e cb = cb "iteration not implemented" >> return e
   start :: e -> (String -> IO ()) -> IO ()
+  start e cb = do
+    newE <- iteration e cb
+    threadDelay $ rate e * 100000
+    start newE cb
 
 data WMRunnable =
   forall e. (WMExec e) =>

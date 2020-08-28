@@ -5,7 +5,7 @@ module Config.Config
   ) where
 
 import Config.Bar (Bars, WMRunnable (..), statusBars)
-import Config.BarPlugins (Interface (..), Net (..))
+import Config.BarPlugins.Net (Net (..))
 import Config.ColorScheme (ColorScheme (..), snazzyCS)
 import Config.Dmenu
     ( Dmenu (center, height, ignoreCase, lineCount, prompt)
@@ -20,7 +20,7 @@ import Config.Scratchpad
 import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
 import Config.Util (run')
 import Config.WindowBringer (decorateName, gotoWindow)
-import Config.Xmobar (Xmobar (template))
+import qualified Config.Xmobar as Bar (Xmobar (..))
 import Data.Default (Default (..))
 import qualified Data.Map as M
 import Data.Monoid (All (..))
@@ -29,6 +29,7 @@ import Graphics.X11.Xlib hiding (Font)
 import Graphics.X11.Xrandr (xrrSelectInput)
 import System.Exit (exitSuccess)
 import Text.Printf (printf)
+import Xmobar (Align (C), Border (BottomB), XPosition (TopSize))
 import XMonad hiding (Default (..), Font, XConfig (..), config, restart)
 import XMonad (XConfig)
 import qualified XMonad (XConfig (..))
@@ -62,7 +63,30 @@ tmux = terminal {cmd = Just ["tmux", "-u"]}
 dmenu :: Dmenu
 dmenu =
   (dmenuDefaults font cs)
-    {ignoreCase = True, prompt = Just ">> ", height = Just 17}
+    {ignoreCase = True, prompt = Just ">> ", height = Just barSize}
+
+bar :: Bar.Xmobar
+bar =
+  def
+    { Bar.font = font
+    , Bar.colorScheme = cs
+    , Bar.position = TopSize C 100 $ fromInteger barSize
+    , Bar.border = BottomB
+    , Bar.lowerOnStart = True
+    , Bar.persistent = True
+    , Bar.template =
+        " wmreader\
+
+      \}<fc=#B3AFC2>mpd</fc>{\
+
+      \ <fc=#D7AFAF>\61820 kernel</fc>\
+      \ <fc=#666666>|</fc> <fc=#FFB86C>%network%</fc>\
+      \ <fc=#666666>|</fc> <fc=#82AAFF>\61463  cpu</fc>\
+      \ <fc=#666666>|</fc> <fc=#D36C5F>\61888  memory</fc>\
+      \ <fc=#666666>|</fc> <fc=#C3E88D>\61479  sound</fc>\
+      \ <fc=#666666>|</fc> <fc=#E1ACFF>\62016  bat</fc>\
+      \ <fc=#666666>|</fc> <fc=#8BE9FD>\61747  date</fc> "
+    }
 
 browser :: [String]
 browser = ["firefox-developer-edition"]
@@ -75,6 +99,9 @@ workspaces = map show [1 .. 9 :: Int]
 
 modm :: KeyMask
 modm = mod4Mask
+
+barSize :: Integer
+barSize = 18
 
 scratchpadMask :: KeyMask
 scratchpadMask = modm .|. shiftMask
@@ -164,8 +191,7 @@ scratchpads =
     centerFloat = floatScratchpad 0.9 0.9 0.95 0.95
 
 bars :: Bars
-bars =
-  ([WMRun $ Net "network" $ Exclude ["lo"]], [def {template = "%network%"}])
+bars = ([WMRun (def :: Net) {rate = 5}], [bar])
 
 logHook :: X ()
 logHook = return ()
@@ -209,42 +235,30 @@ randrSetup = do
   root <- asks theRoot
   liftIO $ xrrSelectInput dpy root rrScreenChangeNotifyMask
 
-clientMask :: EventMask
-clientMask = structureNotifyMask .|. enterWindowMask .|. propertyChangeMask
-
-rootMask :: EventMask
-rootMask =
-  substructureRedirectMask .|. substructureNotifyMask .|. enterWindowMask .|.
-  leaveWindowMask .|.
-  structureNotifyMask .|.
-  buttonPressMask
-
 config =
   statusBars bars $
   setupScratchpads scratchpads scratchpadMask $
   fullscreen $
   ewmh $
-  docks
-    XMonad.XConfig
-      { XMonad.borderWidth = 2
-      , XMonad.workspaces = workspaces
-      , XMonad.layoutHook = layoutHook
-      , XMonad.terminal = command terminal
-      , XMonad.normalBorderColor = base02 cs
-      , XMonad.focusedBorderColor = base0A cs
-      , XMonad.modMask = modm
-      , XMonad.keys = keys
-      , XMonad.logHook = logHook
-      , XMonad.startupHook = startupHook
-      , XMonad.mouseBindings = mouseBindings
-      , XMonad.manageHook = manageHook
-      , XMonad.handleEventHook = handleEventHook
-      , XMonad.focusFollowsMouse = True
-      , XMonad.clickJustFocuses = True
-      , XMonad.clientMask = clientMask
-      , XMonad.rootMask = rootMask
-      , XMonad.handleExtraArgs = \_ c -> return c
-      }
+  docks $
+  def
+    { XMonad.borderWidth = 2
+    , XMonad.workspaces = workspaces
+    , XMonad.layoutHook = layoutHook
+    , XMonad.terminal = command terminal
+    , XMonad.normalBorderColor = base02 cs
+    , XMonad.focusedBorderColor = base0A cs
+    , XMonad.modMask = modm
+    , XMonad.keys = keys
+    , XMonad.logHook = logHook
+    , XMonad.startupHook = startupHook
+    , XMonad.mouseBindings = mouseBindings
+    , XMonad.manageHook = manageHook
+    , XMonad.handleEventHook = handleEventHook
+    , XMonad.focusFollowsMouse = True
+    , XMonad.clickJustFocuses = True
+    , XMonad.handleExtraArgs = \_ c -> return c
+    }
   where
     layoutHook =
       avoidStruts $
