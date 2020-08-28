@@ -38,6 +38,7 @@ import XMonad (XConfig)
 import qualified XMonad (XConfig (..))
 import XMonad.Actions.CycleWS (nextScreen)
 import XMonad.Actions.NoBorders (toggleBorder)
+import XMonad.Hooks.DynamicLog (PP (..), shorten, wrap, xmobarColor, xmobarPP)
 import XMonad.Hooks.EwmhDesktops (ewmh)
 import XMonad.Hooks.ManageDocks
     (ToggleStruts (..), avoidStruts, docks, manageDocks)
@@ -50,6 +51,7 @@ import XMonad.Layout.SimplestFloat (simplestFloat)
 import XMonad.Layout.Spacing (Border (..), spacingRaw)
 import qualified XMonad.StackSet as W
 import XMonad.Util.Cursor (setDefaultCursor)
+import XMonad.Util.NamedScratchpad (namedScratchpadFilterOutWorkspacePP)
 
 font :: Font
 font = def {fontName = "mononoki Nerd Font"}
@@ -68,6 +70,9 @@ dmenu =
   (dmenuDefaults font cs)
     {ignoreCase = True, prompt = Just ">> ", height = Just barSize}
 
+widgetSeperator :: String
+widgetSeperator = xmobarColor "#666666" "" " | "
+
 bar :: Bar.Xmobar
 bar =
   def
@@ -80,13 +85,48 @@ bar =
     , Bar.template =
         "}<fc=#B3AFC2>mpd</fc>{\
 
-      \ <fc=#D7AFAF>\61820 kernel</fc>\
-      \ <fc=#666666>|</fc> <fc=#FFB86C>%network%</fc>\
-      \ <fc=#666666>|</fc> <fc=#82AAFF>\61463  cpu</fc>\
-      \ <fc=#666666>|</fc> <fc=#D36C5F>\61888  memory</fc>\
-      \ <fc=#666666>|</fc> <fc=#C3E88D>\61479  sound</fc>\
-      \ <fc=#666666>|</fc> <fc=#E1ACFF>\62016  bat</fc>\
-      \ <fc=#666666>|</fc> <fc=#8BE9FD>\61747  date</fc> "
+      \ <fc=#D7AFAF>\61820 kernel</fc>" ++
+        widgetSeperator ++
+        "<fc=#FFB86C>%network%</fc>" ++
+        widgetSeperator ++
+        "<fc=#82AAFF>\61463  cpu</fc>" ++
+        widgetSeperator ++
+        "<fc=#D36C5F>\61888  memory</fc>" ++
+        widgetSeperator ++
+        "<fc=#C3E88D>\61479  sound</fc>" ++
+        widgetSeperator ++
+        "<fc=#E1ACFF>\62016  bat</fc>" ++
+        widgetSeperator ++ "<fc=#8BE9FD>\61747  date</fc> "
+    }
+
+focusedPP :: PP
+focusedPP =
+  namedScratchpadFilterOutWorkspacePP
+    xmobarPP
+      { ppCurrent = xmobarColor (base0A cs) "" . wrap "[" "]"
+      , ppVisible = xmobarColor (base0C cs) "" . wrap "(" ")"
+      , ppHidden = xmobarColor (base0D cs) "" . wrap " " " "
+      , ppTitle = xmobarColor (base0A cs) "" . shorten 40
+      , ppSep = widgetSeperator
+      , ppUrgent = xmobarColor (base08 cs) "" . wrap "!" "!"
+      , ppExtras = [windowCount]
+      , ppOrder = \(ws:l:t:ex) -> [ws, l] ++ ex ++ [t]
+      }
+  where
+    windowCount :: X (Maybe String)
+    windowCount =
+      gets $
+      Just .
+      show .
+      length . W.integrate' . W.stack . W.workspace . W.current . windowset
+
+normalPP :: PP
+normalPP =
+  focusedPP
+    { ppCurrent = xmobarColor (base07 cs) "" . wrap "[" "]"
+    , ppVisible = xmobarColor (base07 cs) "" . wrap "(" ")"
+    , ppHidden = xmobarColor (base07 cs) "" . wrap " " " "
+    , ppTitle = xmobarColor (base07 cs) "" . shorten 40
     }
 
 browser :: [String]
@@ -196,14 +236,18 @@ bars = do
   foreachBars <-
     barForeachScreen
       (\(S s) ->
-         bar {Bar.template = "%wmreader" ++ show s ++ "%" ++ Bar.template bar})
+         bar {Bar.template = " %wmreader" ++ show s ++ "%" ++ Bar.template bar})
   foreachReaders <-
     foreachScreen
       (\s ->
          return $
          WMRun $
          (def :: WMReader.WMReader)
-           {WMReader.alias = "wmreader", WMReader.screenId = s})
+           { WMReader.alias = "wmreader"
+           , WMReader.focusedPP = focusedPP
+           , WMReader.normalPP = normalPP
+           , WMReader.screenId = s
+           })
   return (WMRun (def :: Net.Net) {Net.rate = 5} : foreachReaders, foreachBars)
 
 logHook :: X ()

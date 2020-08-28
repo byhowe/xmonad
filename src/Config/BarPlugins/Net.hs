@@ -34,9 +34,7 @@ newtype Kilobytes =
   deriving (Eq)
 
 instance Show Kilobytes where
-  show (K size) =
-    let s = show size ++ "K"
-     in replicate (5 - length s) ' ' ++ s
+  show (K size) = show size ++ "K"
 
 data Net =
   Net
@@ -67,7 +65,11 @@ defaultFormatter m =
   if M.size m == 0
     then "unavailable"
     else let (rx, tx) = combineInterfaces m
-          in show (kilobytes rx) ++ " " ++ show (kilobytes tx)
+             rxK = show $ kilobytes rx
+             txK = show $ kilobytes tx
+             rxS = replicate (5 - length rxK) ' ' ++ rxK
+             txS = txK ++ replicate (5 - length txK) ' '
+          in rxS ++ "\61671" ++ txS
 
 instance Bar.WMExec Net where
   alias Net {alias} = alias
