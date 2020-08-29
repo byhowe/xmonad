@@ -8,7 +8,7 @@ import Config.Bar (Bars, WMRunnable (..), statusBars)
 import qualified Config.BarPlugins.Net as Net (Net (..))
 import Config.BarPlugins.WMReader (wMReader)
 import qualified Config.BarPlugins.WMReader as WMReader (WMReader (..))
-import Config.ColorScheme (ColorScheme (..), snazzyCS)
+import Config.ColorScheme (ColorScheme (..), draculaCS)
 import Config.Dmenu
     ( Dmenu (center, height, ignoreCase, lineCount, prompt)
     , dmenuDefaults
@@ -57,7 +57,7 @@ font :: Font
 font = def {fontName = "mononoki Nerd Font"}
 
 cs :: ColorScheme
-cs = snazzyCS
+cs = draculaCS
 
 terminal :: Terminal
 terminal = alacritty
@@ -71,7 +71,7 @@ dmenu =
     {ignoreCase = True, prompt = Just ">> ", height = Just barSize}
 
 widgetSeperator :: String
-widgetSeperator = xmobarColor "#666666" "" " | "
+widgetSeperator = xmobarColor (base03 cs) "" " | "
 
 bar :: Bar.Xmobar
 bar =
@@ -83,20 +83,25 @@ bar =
     , Bar.lowerOnStart = True
     , Bar.persistent = True
     , Bar.template =
-        "}<fc=#B3AFC2>mpd</fc>{\
-
-      \ <fc=#D7AFAF>\61820 kernel</fc>" ++
-        widgetSeperator ++
-        "<fc=#FFB86C>%network%</fc>" ++
-        widgetSeperator ++
-        "<fc=#82AAFF>\61463  cpu</fc>" ++
-        widgetSeperator ++
-        "<fc=#D36C5F>\61888  memory</fc>" ++
-        widgetSeperator ++
-        "<fc=#C3E88D>\61479  sound</fc>" ++
-        widgetSeperator ++
-        "<fc=#E1ACFF>\62016  bat</fc>" ++
-        widgetSeperator ++ "<fc=#8BE9FD>\61747  date</fc> "
+        concat
+          [ "}"
+          , xmobarColor (base05 cs) "" "mpd"
+          , "{"
+          , xmobarColor (base0A cs) "" "\61820 kernel"
+          , widgetSeperator
+          , xmobarColor (base0B cs) "" "%network%"
+          , widgetSeperator
+          , xmobarColor (base0C cs) "" "\61463  cpu"
+          , widgetSeperator
+          , xmobarColor (base0A cs) "" "\61888  memory"
+          , widgetSeperator
+          , xmobarColor (base0B cs) "" "\61479  sound"
+          , widgetSeperator
+          , xmobarColor (base0C cs) "" "\62016  bat"
+          , widgetSeperator
+          , xmobarColor (base0A cs) "" "\61747  date"
+          , " "
+          ]
     }
 
 focusedPP :: PP
@@ -106,9 +111,10 @@ focusedPP =
       { ppCurrent = xmobarColor (base0A cs) "" . wrap "[" "]"
       , ppVisible = xmobarColor (base0C cs) "" . wrap "(" ")"
       , ppHidden = xmobarColor (base0D cs) "" . wrap " " " "
-      , ppTitle = xmobarColor (base0A cs) "" . shorten 40
+      , ppUrgent = xmobarColor (base08 cs) "" . wrap "(" ")"
       , ppSep = widgetSeperator
-      , ppUrgent = xmobarColor (base08 cs) "" . wrap "!" "!"
+      , ppTitle = xmobarColor (base0A cs) "" . shorten 40
+      , ppLayout = xmobarColor (base0B cs) ""
       , ppExtras = [windowCount]
       , ppOrder = \(ws:l:t:ex) -> [ws, l] ++ ex ++ [t]
       }
