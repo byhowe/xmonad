@@ -6,6 +6,7 @@ module Config.Fullscreen
   ( fullscreen
   ) where
 
+import Control.Monad (when)
 import XMonad
 import XMonad.Hooks.EwmhDesktops (ewmhFullscreen)
 import XMonad.Layout.Fullscreen
@@ -35,10 +36,11 @@ setBorder :: Bool -> Window -> X ()
 setBorder set w = do
   bw <- asks (borderWidth . config)
   withDisplay $ \d ->
-    io $ do
+    liftIO $ do
+      cw <- wa_border_width `fmap` getWindowAttributes d w
       if set
-        then setWindowBorderWidth d w bw
-        else setWindowBorderWidth d w 0
+        then when (cw == 0) $ setWindowBorderWidth d w bw
+        else when (cw /= 0) $ setWindowBorderWidth d w 0
 
 fullscreen ::
      LayoutClass l Window
