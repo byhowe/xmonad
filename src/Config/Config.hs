@@ -23,7 +23,7 @@ import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
 import Config.Util (run')
 import Config.WindowBringer (decorateName, gotoWindow)
 import Config.Xmobar (barForeachScreen, foreachScreen)
-import qualified Config.Xmobar as Bar (Xmobar (..))
+import qualified Config.Xmobar as Bar (StaticReader (..), Xmobar (..))
 import Data.Default (Default (..))
 import qualified Data.Map as M
 import Data.Monoid (All (..))
@@ -31,8 +31,9 @@ import Graphics.X11.ExtraTypes
 import Graphics.X11.Xlib hiding (Font)
 import Graphics.X11.Xrandr (xrrSelectInput)
 import System.Exit (exitSuccess)
+import System.Process (readProcess)
 import Text.Printf (printf)
-import Xmobar (Align (C), Border (BottomB), XPosition (TopSize))
+import Xmobar (Align (C), Border (BottomB), Runnable (Run), XPosition (TopSize))
 import XMonad hiding (Default (..), Font, XConfig (..), config, restart)
 import XMonad (XConfig)
 import qualified XMonad (XConfig (..))
@@ -82,12 +83,14 @@ bar =
     , Bar.border = BottomB
     , Bar.lowerOnStart = True
     , Bar.persistent = True
+    , Bar.commands =
+        [Run $ Bar.StaticReader (readProcess "uname" ["-r"] []) "kernel"]
     , Bar.template =
         concat
           [ "}"
           , xmobarColor (base05 cs) "" "mpd"
           , "{"
-          , xmobarColor (base0A cs) "" "\61820 kernel"
+          , xmobarColor (base0A cs) "" "\61820 %kernel%"
           , widgetSeperator
           , xmobarColor (base0B cs) "" "%network%"
           , widgetSeperator

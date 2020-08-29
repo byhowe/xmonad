@@ -1,6 +1,7 @@
 module Config.Xmobar
   ( Xmobar(..)
   , ChanReader(..)
+  , StaticReader(..)
   , xmobarToConfig
   , screen
   , foreachScreen
@@ -118,6 +119,19 @@ instance Read ChanReader where
 instance Exec ChanReader where
   alias (ChanReader _ a) = a
   start (ChanReader chan _) cb = forever $ readChan chan >>= cb
+
+data StaticReader =
+  StaticReader (IO String) String
+
+instance Show StaticReader where
+  show = undefined
+
+instance Read StaticReader where
+  readsPrec = undefined
+
+instance Exec StaticReader where
+  alias (StaticReader _ a) = a
+  start (StaticReader m _) cb = cb . head . lines =<< m
 
 foreachScreen :: MonadIO m => (ScreenId -> m a) -> m [a]
 foreachScreen m = mapM m =<< getScreens
