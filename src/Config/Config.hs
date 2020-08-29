@@ -282,7 +282,10 @@ manageHook = manageRules <+> manageDocks
       isInProperty "_NET_WM_WINDOW_TYPE" $ "_NET_WM_WINDOW_TYPE_" ++ t
 
 handleEventHook :: Event -> X All
-handleEventHook RRScreenChangeNotifyEvent {} = restart >> return (All False)
+handleEventHook RRScreenChangeNotifyEvent {} = do
+  run' ["nitrogen", "--restore"]
+  restart
+  return $ All False
 handleEventHook ClientMessageEvent {ev_message_type = mt} = do
   a <- getAtom "WINDOW_MANAGER_RESTART"
   if mt == a
