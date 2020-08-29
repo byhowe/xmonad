@@ -119,7 +119,8 @@ focusedPP =
       , ppTitle = xmobarColor (base0A cs) "" . shorten 40
       , ppLayout = xmobarColor (base0B cs) ""
       , ppExtras = [windowCount]
-      , ppOrder = \(ws:l:t:ex) -> [ws, l] ++ ex ++ [t]
+      , ppOrder =
+          \(ws:l:t:ex) -> [ws, l] ++ map (xmobarColor (base04 cs) "") ex ++ [t]
       }
   where
     windowCount :: X (Maybe String)
