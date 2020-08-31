@@ -1,4 +1,5 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns    #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Config.BarPlugins.Bat
   ( Bat(..)
@@ -18,28 +19,51 @@ data Bat =
   Bat
     { alias     :: String
     , rate      :: Int
-    , formatter :: [(String, Int)] -> String
+    , formatter :: [(String, Int, BatStatus)] -> String
     }
 
-instance Default Bat where
-  def = Bat {alias = "battery", formatter = defaultFormatter, rate = 300}
+data BatStatus
+  = Charging
+  | Discharging
+  | Full
+  deriving (Eq)
 
-defaultFormatter :: [(String, Int)] -> String
+instance Default Bat where
+  def = Bat {alias = "battery", formatter = defaultFormatter, rate = 50}
+
+defaultFormatter :: [(String, Int, BatStatus)] -> String
 defaultFormatter stats =
-  concat $ for stats $ \(_, pcntg) -> batSymbol ++ "  " ++ show pcntg ++ "%"
+  concat $
+  for stats $ \(_, pcntg, status) ->
+    let pcntg' = show pcntg
+     in symbol pcntg status ++
+        "  " ++ replicate (3 - length pcntg') ' ' ++ pcntg' ++ "%"
   where
-    batSymbol = "\62016"
+    symbol pcntg status
+      | status /= Discharging = plugSymbol
+      | pcntg > 90 = batFull
+      | pcntg > 65 = batThreeQuarters
+      | pcntg > 45 = batHalf
+      | pcntg > 15 = batQuarter
+      | otherwise = batEmpty
+    batEmpty = "\62020"
+    batFull = "\62016"
+    batThreeQuarters = "\62017"
+    batHalf = "\62018"
+    batQuarter = "\62019"
+    plugSymbol = "\61926"
 
 instance Bar.WMExec Bat where
   alias Bat {alias} = alias
   rate Bat {rate} = rate
   iteration e@Bat {formatter} cb = do
     bats <- getAllBatteries
-    pcntgs <-
+    stats <-
       forM bats $ \bat -> do
         pcntg <- getPercentage bat
-        return (bat, pcntg)
-    cb $ formatter pcntgs
+        status <- getStatus bat
+        return (bat, pcntg, status)
+    cb $ formatter stats
     return e
 
 batDir :: String
@@ -55,3 +79,14 @@ getPercentage bat = do
     bytes <- B.readFile $ batDir </> bat </> "capacity"
     let Just (percentage, _) = B.readInt . B.init $ bytes
     return $! percentage
+
+getStatus :: String -> IO BatStatus
+getStatus bat =
+  flip catchIOError (const $ return Discharging) $ do
+    status <- B.readFile $ batDir </> bat </> "status"
+    return $
+      case B.init status of
+        "Charging"    -> Charging
+        "Discharging" -> Discharging
+        "Full"        -> Full
+        _             -> Discharging
