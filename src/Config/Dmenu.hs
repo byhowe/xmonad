@@ -61,10 +61,10 @@ dmenuDefaults fn cs =
   def
     { font = Just fn
     -- color
-    , background = Just $ bg1 cs
-    , foreground = Just $ fg1 cs
-    , selectedBackground = Just $ red cs
-    , selectedForeground = Just $ fg2 cs
+    , background = Just $ bg cs
+    , foreground = Just $ fg cs
+    , selectedBackground = Just $ yellow cs
+    , selectedForeground = Just $ brightBg cs
     }
 
 constructArgs :: Dmenu -> [String]

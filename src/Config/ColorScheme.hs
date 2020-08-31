@@ -1,48 +1,38 @@
 module Config.ColorScheme
   ( ColorScheme(..)
-  , challengerDeep
+  , challengerDeepCS
   ) where
 
 import Data.Default (Default (..))
 
 data ColorScheme =
   CS
-    { bg1           :: String
-    , bg2           :: String
-    , fg1           :: String
-    , fg2           :: String
-    , red           :: String
-    , brightRed     :: String
-    , green         :: String
-    , brightGreen   :: String
-    , yellow        :: String
-    , brightBlue    :: String
-    , blue          :: String
-    , magenta       :: String
-    , brightMagenta :: String
-    , brightCyan    :: String
-    , cyan          :: String
+    { bg       :: String
+    , brightBg :: String
+    , fg       :: String
+    , brightFg :: String
+    , grey     :: String
+    , blue     :: String
+    , green    :: String
+    , magenta  :: String
+    , red      :: String
+    , yellow   :: String
     }
 
 instance Default ColorScheme where
-  def = challengerDeep
+  def = challengerDeepCS
 
-challengerDeep :: ColorScheme
-challengerDeep =
+challengerDeepCS :: ColorScheme
+challengerDeepCS =
   CS
-    { bg1 = "#1E1C31"
-    , bg2 = "#12111E"
-    , fg1 = "#B2B2B2"
-    , fg2 = "#CBE3E7"
-    , red = "#FF8080"
-    , brightRed = "#FFB378"
+    { bg = "#12111E"
+    , brightBg = "#1E1C31"
+    , fg = "#B2B2B2"
+    , brightFg = "#CBE3E7"
+    , grey = "#6c71c4"
+    , blue = "#63F2F1"
     , green = "#95FFA4"
-    , brightGreen = "#63F2F1"
-    , yellow = "#FFE9AA"
-    , brightBlue = "#91DDFF"
-    , blue = "#65B2FF"
     , magenta = "#C991E1"
-    , brightMagenta = "#906CFF"
-    , brightCyan = "#AAFFE4"
-    , cyan = "#62D196"
+    , red = "#FF8080"
+    , yellow = "#FFE9AA"
     }

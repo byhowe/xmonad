@@ -8,7 +8,7 @@ import Config.Bar (Bars, WMRunnable (..), statusBars)
 import qualified Config.BarPlugins.Net as Net (Net (..))
 import Config.BarPlugins.WMReader (wMReader)
 import qualified Config.BarPlugins.WMReader as WMReader (WMReader (..))
-import Config.ColorScheme (ColorScheme (..), challengerDeep)
+import Config.ColorScheme (ColorScheme (..), challengerDeepCS)
 import Config.Dmenu
     ( Dmenu (center, height, ignoreCase, lineCount, prompt)
     , dmenuDefaults
@@ -56,10 +56,10 @@ import XMonad.Util.Cursor (setDefaultCursor)
 import XMonad.Util.NamedScratchpad (namedScratchpadFilterOutWorkspacePP)
 
 font :: Font
-font = def {fontName = "mononoki Nerd Font"}
+font = def {fontName = "JetBrainsMono Nerd Font", fontSize = 11}
 
 cs :: ColorScheme
-cs = challengerDeep
+cs = challengerDeepCS
 
 terminal :: Terminal
 terminal = alacritty
@@ -73,7 +73,7 @@ dmenu =
     {ignoreCase = True, prompt = Just ">> ", height = Just barSize}
 
 widgetSeperator :: String
-widgetSeperator = xmobarColor (fg1 cs) "" " | "
+widgetSeperator = xmobarColor (brightBg cs) "" " | "
 
 bar :: Bar.Xmobar
 bar =
@@ -92,19 +92,19 @@ bar =
           [ "}"
           , xmobarColor (yellow cs) "" "mpd"
           , "{"
-          , xmobarColor (brightRed cs) "" "\61820 %kernel%"
+          , xmobarColor (red cs) "" "\61820 %kernel%"
           , widgetSeperator
-          , xmobarColor (green cs) "" "%network%"
+          , xmobarColor (yellow cs) "" "%network%"
           , widgetSeperator
-          , xmobarColor (brightBlue cs) "" "\61463  cpu"
+          , xmobarColor (blue cs) "" "\61463  cpu"
           , widgetSeperator
-          , xmobarColor (brightMagenta cs) "" "\61888  memory"
+          , xmobarColor (magenta cs) "" "\61888  memory"
           , widgetSeperator
           , xmobarColor (yellow cs) "" "\61479  sound"
           , widgetSeperator
-          , xmobarColor (blue cs) "" "\62016  bat"
+          , xmobarColor (red cs) "" "\62016  bat"
           , widgetSeperator
-          , xmobarColor (cyan cs) "" "\61747  date"
+          , xmobarColor (green cs) "" "\61747  date"
           , " "
           ]
     }
@@ -119,10 +119,10 @@ focusedPP =
       , ppUrgent = xmobarColor (red cs) "" . wrap "(" ")"
       , ppSep = widgetSeperator
       , ppTitle = xmobarColor (magenta cs) "" . shorten 40
-      , ppLayout = xmobarColor (yellow cs) ""
+      , ppLayout = xmobarColor (green cs) ""
       , ppExtras = [windowCount]
       , ppOrder =
-          \(ws:l:t:ex) -> [ws, l] ++ map (xmobarColor (fg2 cs) "") ex ++ [t]
+          \(ws:l:t:ex) -> [ws, l] ++ map (xmobarColor (yellow cs) "") ex ++ [t]
       }
   where
     windowCount :: X (Maybe String)
@@ -135,10 +135,10 @@ focusedPP =
 normalPP :: PP
 normalPP =
   focusedPP
-    { ppCurrent = xmobarColor (brightBlue cs) "" . wrap "[" "]"
-    , ppVisible = xmobarColor (fg1 cs) "" . wrap "(" ")"
-    , ppHidden = xmobarColor (fg1 cs) "" . wrap " " " "
-    , ppTitle = xmobarColor (fg1 cs) "" . shorten 40
+    { ppCurrent = xmobarColor (blue cs) "" . wrap "[" "]"
+    , ppVisible = xmobarColor (fg cs) "" . wrap "(" ")"
+    , ppHidden = xmobarColor (fg cs) "" . wrap " " " "
+    , ppTitle = xmobarColor (fg cs) "" . shorten 40
     }
 
 browser :: [String]
@@ -154,7 +154,7 @@ modm :: KeyMask
 modm = mod4Mask
 
 barSize :: Integer
-barSize = 18
+barSize = 16
 
 scratchpadMask :: KeyMask
 scratchpadMask = modm .|. shiftMask
@@ -320,8 +320,8 @@ config =
     , XMonad.workspaces = workspaces
     , XMonad.layoutHook = layoutHook
     , XMonad.terminal = command terminal
-    , XMonad.normalBorderColor = bg1 cs
-    , XMonad.focusedBorderColor = brightBlue cs
+    , XMonad.normalBorderColor = bg cs
+    , XMonad.focusedBorderColor = blue cs
     , XMonad.modMask = modm
     , XMonad.keys = keys
     , XMonad.logHook = logHook
