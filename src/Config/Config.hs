@@ -5,6 +5,7 @@ module Config.Config
   ) where
 
 import Config.Bar (Bars, WMRunnable (..), statusBars)
+import qualified Config.BarPlugins.Bat as Bat (Bat (..))
 import qualified Config.BarPlugins.Net as Net (Net (..))
 import Config.BarPlugins.WMReader (wMReader)
 import qualified Config.BarPlugins.WMReader as WMReader (WMReader (..))
@@ -102,7 +103,7 @@ bar =
           , widgetSeperator
           , xmobarColor (yellow cs) "" "\61479  sound"
           , widgetSeperator
-          , xmobarColor (red cs) "" "\62016  bat"
+          , xmobarColor (red cs) "" "%battery%"
           , widgetSeperator
           , xmobarColor (green cs) "" "\61747  date"
           , " "
@@ -260,7 +261,10 @@ bars = do
            , WMReader.normalPP = normalPP
            , WMReader.screenId = s
            })
-  return (WMRun (def :: Net.Net) {Net.rate = 5} : foreachReaders, foreachBars)
+  return
+    ( WMRun (def :: Net.Net) {Net.rate = 5} :
+      WMRun (def :: Bat.Bat) : foreachReaders
+    , foreachBars)
 
 logHook :: X ()
 logHook = return ()
