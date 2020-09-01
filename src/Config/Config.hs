@@ -6,6 +6,7 @@ module Config.Config
 
 import Config.Bar (Bars, WMRunnable (..), statusBars)
 import qualified Config.BarPlugins.Bat as Bat (Bat (..))
+import qualified Config.BarPlugins.Mem as Mem (Mem (..))
 import qualified Config.BarPlugins.Net as Net (Net (..))
 import Config.BarPlugins.WMReader (wMReader)
 import qualified Config.BarPlugins.WMReader as WMReader (WMReader (..))
@@ -99,7 +100,7 @@ bar =
           , widgetSeperator
           , xmobarColor (blue cs) "" "\61463  cpu"
           , widgetSeperator
-          , xmobarColor (magenta cs) "" "\61888  memory"
+          , xmobarColor (magenta cs) "" "\61888  %memory%"
           , widgetSeperator
           , xmobarColor (yellow cs) "" "\61479  sound"
           , widgetSeperator
@@ -263,7 +264,7 @@ bars = do
            })
   return
     ( WMRun (def :: Net.Net) {Net.rate = 5} :
-      WMRun (def :: Bat.Bat) : foreachReaders
+      WMRun (def :: Bat.Bat) : WMRun (def :: Mem.Mem) : foreachReaders
     , foreachBars)
 
 logHook :: X ()

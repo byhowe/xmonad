@@ -34,6 +34,7 @@ library
     , Config.Bar
     , Config.BarPlugins.Net
     , Config.BarPlugins.Bat
+    , Config.BarPlugins.Mem
     , Config.BarPlugins.WMReader
     , Config.Xmobar
     , Config.DynamicLog
