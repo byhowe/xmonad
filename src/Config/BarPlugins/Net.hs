@@ -74,7 +74,7 @@ defaultFormatter m =
 instance Bar.WMExec Net where
   alias Net {alias} = alias
   rate Net {rate} = rate
-  iteration e@Net {formatter, interface, previous} cb = do
+  iteration e@Net {formatter, rate, interface, previous} cb = do
     interfaces <- filtered
     bytes <-
       forM interfaces $ \i -> do
@@ -84,7 +84,16 @@ instance Bar.WMExec Net where
           Just (rx, tx) ->
             if (curRx < rx) || (curTx < tx)
               then return (i, (curRx, curTx), Nothing)
-              else return (i, (curRx, curTx), Just (curRx - rx, curTx - tx))
+              else return
+                     ( i
+                     , (curRx, curTx)
+                     , Just
+                         ( floor $
+                           (10.0 / (fromIntegral rate :: Float)) *
+                           (fromIntegral $ curRx - rx :: Float)
+                         , floor $
+                           (10.0 / (fromIntegral rate :: Float)) *
+                           (fromIntegral $ curTx - tx :: Float)))
     cb . formatter . M.fromList $
       filterMap
         (\(i, _, diff) ->
