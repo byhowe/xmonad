@@ -37,7 +37,6 @@ library
     , Config.BarPlugins.Mem
     , Config.BarPlugins.WMReader
     , Config.Xmobar
-    , Config.DynamicLog
     , Config.Util
     , Config.Terminal
     , Config.Dmenu
