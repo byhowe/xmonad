@@ -35,6 +35,7 @@ library
     , Config.BarPlugins.Net
     , Config.BarPlugins.Bat
     , Config.BarPlugins.Mem
+    , Config.BarPlugins.Cpu
     , Config.BarPlugins.WMReader
     , Config.Xmobar
     , Config.Util
