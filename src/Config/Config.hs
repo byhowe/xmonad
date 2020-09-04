@@ -59,7 +59,7 @@ import XMonad.Util.Cursor (setDefaultCursor)
 import XMonad.Util.NamedScratchpad (namedScratchpadFilterOutWorkspacePP)
 
 font :: Font
-font = def {fontName = "JetBrainsMono Nerd Font", fontSize = 11}
+font = def {fontName = "mononoki Nerd Font", fontSize = 12}
 
 cs :: ColorScheme
 cs = challengerDeepCS
