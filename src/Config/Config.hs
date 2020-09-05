@@ -264,7 +264,7 @@ bars = do
            , WMReader.screenId = s
            })
   return
-    ( WMRun (def :: Net.Net) {Net.rate = 5} :
+    ( WMRun (def :: Net.Net) :
       WMRun (def :: Bat.Bat) :
       WMRun (def :: Mem.Mem) : WMRun (def :: Cpu.Cpu) : foreachReaders
     , foreachBars)
