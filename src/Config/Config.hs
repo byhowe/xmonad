@@ -242,6 +242,7 @@ scratchpads =
     , (xK_d, terminal {cmd = Just ["ranger"]}, centerFloat)
     , (xK_m, terminal {cmd = Just ["ncmpcpp"]}, centerFloat)
     , (xK_p, terminal {cmd = Just ["htop"]}, centerFloat)
+    , (xK_n, terminal {cmd = Just ["newsboat"]}, centerFloat)
     ]
   where
     centerFloat = floatScratchpad 0.9 0.9 0.95 0.95
