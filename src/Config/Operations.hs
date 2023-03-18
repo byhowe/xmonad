@@ -8,7 +8,6 @@ module Config.Operations
 
 import Config.Bar (cleanupBars)
 import Config.Terminal
-import Config.Util
 import Control.Monad (when)
 import Data.Function (fix)
 import System.Directory
@@ -21,13 +20,13 @@ import qualified XMonad.Operations as O
 
 recompile :: Maybe Terminal -> IO Bool
 recompile term = do
-  dir <- getConfigDir
-  exists <- doesPathExist dir
+  dirs <- getDirectories
+  exists <- doesPathExist $ cfgDir dirs
   uninstallSignalHandlers
   let compileConsole :: IO Bool
       compileConsole = do
-        putStrLn . printf "Recompiling the source code at %s." $ dir
-        (_, _, _, h) <- createProcess $ recompileProcess dir
+        putStrLn . printf "Recompiling the source code at %s." $ cfgDir dirs
+        (_, _, _, h) <- createProcess $ recompileProcess $ cfgDir dirs
         status <- waitForProcess h
         if status == ExitSuccess
           then putStrLn "XMonad recompilation exited with success." >>
@@ -37,7 +36,7 @@ recompile term = do
   let compileTerminal :: Terminal -> IO Bool
       compileTerminal t = do
         (status, _, err) <-
-          readCreateProcessWithExitCode (recompileProcess dir) []
+          readCreateProcessWithExitCode (recompileProcess $ cfgDir dirs) []
         if status == ExitSuccess
           then return True
           else printToTerminal t err >> return False
@@ -45,7 +44,7 @@ recompile term = do
     if exists
       then maybe compileConsole compileTerminal term
       else do
-        putStrLn . printf "%s doesn't exist." $ dir
+        putStrLn . printf "%s doesn't exist." $ cfgDir dirs
         return False
   installSignalHandlers
   return res

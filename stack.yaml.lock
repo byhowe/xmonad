@@ -5,26 +5,15 @@
 
 packages:
 - completed:
-    name: xmonad-contrib
-    version: '0.16'
-    git: https://github.com/xmonad/xmonad-contrib.git
-    pantry-tree:
-      size: 21009
-      sha256: 051fcd1bc36c455864fd94623d697a540dfaebeb16d3ceb0fd367791118cc10c
-    commit: 02baee5f7e711f3d6dc88aaa42cd50a120bf3b3b
-  original:
-    git: https://github.com/xmonad/xmonad-contrib.git
-    commit: 02baee5f7e711f3d6dc88aaa42cd50a120bf3b3b
-- completed:
     hackage: xmobar-0.36@sha256:93ba52b821c6103a9a85ba3acab34fbc5b5cff71d4a1a1d20ea3d1d067a2fc68,11919
     pantry-tree:
-      size: 6404
       sha256: 178e322a2fdf41ea4a56bd0cd4d3e7dc8e9e6a99fabadedf5eeb4d20df459bc0
+      size: 6404
   original:
     hackage: xmobar-0.36
 snapshots:
 - completed:
-    size: 532172
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/18.yaml
-    sha256: 4f2a092c6f4869854e8d7435ab98ce5157c641022c3cbfc4c4614ff3db752e62
-  original: lts-16.18
+    sha256: adbc602422dde10cc330175da7de8609e70afc41449a7e2d6e8b1827aa0e5008
+    size: 649342
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/11.yaml
+  original: lts-20.11

@@ -9,7 +9,7 @@ module Config.BarPlugins.WMReader
 
 import qualified Config.Bar as Bar (WMExec (..))
 import Control.Monad (forM_)
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import XMonad hiding (Default (..))
 import XMonad.Hooks.DynamicLog (PP, dynamicLogString, xmobarPP)
 import qualified XMonad.StackSet as W

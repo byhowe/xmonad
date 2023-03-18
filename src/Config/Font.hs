@@ -3,7 +3,7 @@ module Config.Font
   , getXft
   ) where
 
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import Data.List (intercalate)
 
 data Font =

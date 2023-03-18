@@ -27,7 +27,7 @@ import Config.Util (run')
 import Config.WindowBringer (decorateName, gotoWindow)
 import Config.Xmobar (barForeachScreen, foreachScreen)
 import qualified Config.Xmobar as Bar (StaticReader (..), Xmobar (..))
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import qualified Data.Map as M
 import Data.Monoid (All (..))
 import Graphics.X11.ExtraTypes

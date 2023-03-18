@@ -3,7 +3,7 @@ module Config.ColorScheme
   , challengerDeepCS
   ) where
 
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 
 data ColorScheme =
   CS

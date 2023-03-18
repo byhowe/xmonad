@@ -1,6 +1,5 @@
 module Config.Util
-  ( getConfigDir
-  , fork
+  ( fork
   , forkPID
   , run
   , run'
@@ -10,9 +9,7 @@ module Config.Util
 
 import Control.Monad (void)
 import Graphics.X11.Xinerama (getScreenInfo)
-import System.Directory
 import System.Posix (ProcessID)
-import System.Posix.Env (getEnv)
 import System.Process
 import System.Random (newStdGen, randoms)
 import XMonad hiding (recompile, restart)
@@ -44,15 +41,3 @@ getScreens =
          return rects
     let ids = zip [0 ..] screens
     return $ map fst ids
-
-getConfigDir :: IO FilePath
-getConfigDir = do
-  let xdg = getXdgDirectory XdgConfig "xmonad"
-  envPath <- getEnv "XMONAD_CONFIG_DIR"
-  case envPath of
-    Nothing -> xdg
-    Just p -> do
-      envExists <- doesPathExist p
-      if envExists
-        then return p
-        else xdg

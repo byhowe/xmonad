@@ -7,7 +7,7 @@ module Config.BarPlugins.Cpu
 
 import qualified Config.Bar as Bar (WMExec (..))
 import qualified Data.ByteString.Char8 as B
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import System.IO.Error (catchIOError)
 
 data Cpu =

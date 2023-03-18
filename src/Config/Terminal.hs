@@ -8,7 +8,7 @@ module Config.Terminal
 
 import Config.Util (generateRandomString)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import Data.Maybe (fromJust, isJust)
 import System.Directory (getTemporaryDirectory)
 import System.FilePath ((</>))

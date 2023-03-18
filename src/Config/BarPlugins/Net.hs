@@ -11,7 +11,7 @@ module Config.BarPlugins.Net
 import qualified Config.Bar as Bar (WMExec (..))
 import Control.Monad (filterM, forM)
 import qualified Data.ByteString.Char8 as B
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import qualified Data.Map as M
 import System.Directory (listDirectory)
 import System.FilePath ((</>))

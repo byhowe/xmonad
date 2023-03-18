@@ -12,7 +12,7 @@ import Config.ColorScheme (ColorScheme (..))
 import Config.Font (Font, getXft)
 import Config.Util (fork)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import qualified Data.Map as M
 import Data.Maybe (fromJust, isJust)
 import System.Process

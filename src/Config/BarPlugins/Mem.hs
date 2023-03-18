@@ -8,7 +8,7 @@ module Config.BarPlugins.Mem
 
 import qualified Config.Bar as Bar (WMExec (..))
 import qualified Data.ByteString.Char8 as B
-import Data.Default (Default (..))
+import Data.Default.Class (Default (..))
 import Data.Maybe (fromMaybe)
 import System.IO.Error (catchIOError)
 
