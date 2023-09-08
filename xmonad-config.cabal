@@ -37,6 +37,7 @@ library
       Config.Dmenu
       Config.Font
       Config.Fullscreen
+      Config.Keybindings
       Config.Operations
       Config.Scratchpad
       Config.Terminal

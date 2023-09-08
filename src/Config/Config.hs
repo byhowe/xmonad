@@ -12,19 +12,13 @@ import qualified Config.BarPlugins.Net as Net (Net (..))
 import Config.BarPlugins.WMReader (wMReader)
 import qualified Config.BarPlugins.WMReader as WMReader (WMReader (..))
 import Config.ColorScheme (ColorScheme (..), challengerDeepCS)
-import Config.Dmenu
-    ( Dmenu (center, height, ignoreCase, lineCount, prompt)
-    , dmenuDefaults
-    , dmenuRun
-    )
 import Config.Font (Font (..))
 import Config.Fullscreen (fullscreen)
 import Config.Operations (recompileRestart, restart)
 import Config.Scratchpad
     (Scratchpads, floatScratchpad, scratchpadTerminal, setupScratchpads)
-import Config.Terminal (Terminal (..), alacritty, spawnTerminal)
+import Config.Terminal (Terminal (..), alacritty)
 import Config.Util (run')
-import Config.WindowBringer (decorateName, gotoWindow)
 import Config.Xmobar (barForeachScreen, foreachScreen)
 import qualified Config.Xmobar as Bar (StaticReader (..), Xmobar (..))
 import Data.Default.Class (Default (..))
@@ -35,7 +29,6 @@ import Graphics.X11.Xlib hiding (Font)
 import Graphics.X11.Xrandr (xrrSelectInput)
 import System.Exit (exitSuccess)
 import System.Process (readProcess)
-import Text.Printf (printf)
 import Xmobar (Align (C), Runnable (Run), XPosition (TopSize))
 import XMonad hiding (Default (..), Font, XConfig (..), config, restart)
 import XMonad (XConfig)
@@ -57,23 +50,16 @@ import XMonad.Layout.Spacing (Border (..), spacingRaw)
 import qualified XMonad.StackSet as W
 import XMonad.Util.Cursor (setDefaultCursor)
 import XMonad.Util.NamedScratchpad (namedScratchpadFilterOutWorkspacePP)
+import Config.Keybindings (applications)
 
 font :: Font
-font = def {fontName = "mononoki Nerd Font", fontSize = 12}
+font = def {fontName = "FiraCode Nerd Font", fontSize = 12}
 
 cs :: ColorScheme
 cs = challengerDeepCS
 
 terminal :: Terminal
 terminal = alacritty
-
-tmux :: Terminal
-tmux = terminal {cmd = Just ["tmux", "-u"]}
-
-dmenu :: Dmenu
-dmenu =
-  (dmenuDefaults font cs)
-    {ignoreCase = True, prompt = Just ">> ", height = Just barSize}
 
 widgetSeperator :: String
 widgetSeperator = xmobarColor (brightBg cs) "" " | "
@@ -143,12 +129,6 @@ normalPP =
     , ppTitle = xmobarColor (fg cs) "" . shorten 40
     }
 
-browser :: [String]
-browser = ["firefox-developer-edition"]
-
-editor :: [String]
-editor = ["emacs"]
-
 workspaces :: [String]
 workspaces = map show [1 .. 9 :: Int]
 
@@ -164,18 +144,8 @@ scratchpadMask = modm .|. shiftMask
 keys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 keys _ =
   M.fromList $
-  -- applications
-  [ ((modm, xK_Return), spawnTerminal tmux)
-  , ((modm, xK_a), spawnTerminal terminal)
-  , ((modm, xK_w), run' browser)
-  , ((modm, xK_e), run' editor)
   -- menu
-  , ((modm, xK_r), dmenuRun dmenu)
-  , ( (modm .|. shiftMask, xK_w)
-    , gotoWindow dmenu {center = True, lineCount = Just 12} $
-      decorateName $ \n ws -> printf "%s : %s" ws n)
-    -- navigation
-  , ((modm .|. shiftMask, xK_q), kill)
+  [ ((modm .|. shiftMask, xK_q), kill)
   , ((modm .|. shiftMask, xK_Tab), nextScreen)
   , ((modm, xK_Tab), windows W.focusDown)
   , ((modm, xK_j), windows W.focusDown)
@@ -236,7 +206,7 @@ mouseBindings _ =
 scratchpads :: Scratchpads
 scratchpads =
   scratchpadTerminal
-    [ (xK_a, tmux, centerFloat)
+    [ (xK_a, terminal, centerFloat)
     , (xK_s, terminal {cmd = Just ["pulsemixer"]}, centerFloat)
     , (xK_d, terminal {cmd = Just ["ranger"]}, centerFloat)
     , (xK_m, terminal {cmd = Just ["ncmpcpp"]}, centerFloat)
@@ -322,6 +292,7 @@ config =
   fullscreen $
   ewmh $
   docks $
+  applications $
   def
     { XMonad.borderWidth = 2
     , XMonad.workspaces = workspaces
