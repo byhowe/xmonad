@@ -2,7 +2,7 @@ module Main (main) where
 
 import Config.Config (config)
 import Config.Operations (recompile)
-import Control.Monad (when)
+import Control.Monad (unless)
 import Data.Version (showVersion)
 import Graphics.X11.Xinerama (compiledWithXinerama)
 import Paths_xmonad_config (version)
@@ -13,14 +13,14 @@ import Text.Printf (printf)
 import XMonad (Directories' (..), getDirectories, launch)
 
 main :: IO ()
-main = getArgs >>= cli
+main = getArgs >>= cli >> exitSuccess
 
 cli :: [String] -> IO ()
-cli [help] | help `elem` ["help", "-h", "--help"] = printUsage >> exitSuccess
-cli [ver] | ver `elem` ["version", "-v", "--version"] = printVersion >> exitSuccess
-cli [info] | info `elem` ["info", "-vv", "--info"] = printInfo >> exitSuccess
-cli ["dirs"] = printDirectories >> exitSuccess
-cli ["recompile"] = recompile Nothing >>= \success -> when success exitSuccess >> exitFailure
+cli [help] | help `elem` ["help", "-h", "--help"] = printUsage
+cli [ver] | ver `elem` ["version", "-v", "--version"] = printVersion
+cli [info] | info `elem` ["info", "-vv", "--info"] = printInfo
+cli ["dirs"] = printDirectories
+cli ["recompile"] = recompile Nothing >>= unless <*> const exitFailure
 cli ["run"] = getDirectories >>= launch config
 cli a = do
   putStrLn . printf "Unrecognized command(s): %s\n" $ unwords a
