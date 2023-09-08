@@ -1,6 +1,8 @@
 module Main (main) where
 
 import Config.Config (config)
+import Config.Operations (recompile)
+import Control.Monad (when)
 import Data.Version (showVersion)
 import Graphics.X11.Xinerama (compiledWithXinerama)
 import Paths_xmonad_config (version)
@@ -18,6 +20,7 @@ cli [help] | help `elem` ["help", "-h", "--help"] = printUsage >> exitSuccess
 cli [ver] | ver `elem` ["version", "-v", "--version"] = printVersion >> exitSuccess
 cli [info] | info `elem` ["info", "-vv", "--info"] = printInfo >> exitSuccess
 cli ["dirs"] = printDirectories >> exitSuccess
+cli ["recompile"] = recompile Nothing >>= \success -> when success exitSuccess >> exitFailure
 cli ["run"] = getDirectories >>= launch config
 cli a = do
   putStrLn . printf "Unrecognized command(s): %s\n" $ unwords a
@@ -34,6 +37,7 @@ printUsage = do
       \  version    Print the version number\n\
       \  info       Print the verbose version information\n\
       \  dirs       Print the directory information\n\
+      \  recompile  Recompile xmonad\n\
       \  run        Run xmonad\n"
       self
 
