@@ -27,8 +27,7 @@ cli a = do
 printUsage :: IO ()
 printUsage = do
   self <- getProgName
-  putStr
-    . printf
+  putStr $ printf
       "Usage: %s [COMMAND]\n\
       \Commands:\n\
       \  help       Print this message\n\
@@ -36,7 +35,7 @@ printUsage = do
       \  info       Print the verbose version information\n\
       \  dirs       Print the directory information\n\
       \  run        Run xmonad\n"
-    $ self
+      self
 
 printVersion :: IO ()
 printVersion = putStrLn . printf "xmonad %s" $ showVersion version
@@ -45,7 +44,7 @@ printInfo :: IO ()
 printInfo =
   putStr $
     printf
-      "xmonad %s compiled by %s %s for %s-%s\n\
+      "xmonad (byron howe) %s compiled by %s %s for %s-%s\n\
       \Xinerama: %s\n"
       (showVersion version)
       compilerName
@@ -60,8 +59,8 @@ printDirectories = do
   putStr $
     printf
       "Config Dir: %s\n\
-      \Data Dir: %s\n\
-      \Cache Dir: %s\n"
+      \Data Dir:   %s\n\
+      \Cache Dir:  %s\n"
       (cfgDir dirs)
       (dataDir dirs)
       (cacheDir dirs)

@@ -1,10 +1,10 @@
 name:                xmonad-config
-version:             0.17.1
-github:              "githubuser/xmonad-config"
+version:             0.17.2
+github:              "byhowe/xmonad"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2023 Author name here"
+author:              "Ömer Faruk Çavuş"
+maintainer:          "byhowe@proton.me"
+copyright:           "2023 Ömer Faruk Çavuş"
 
 extra-source-files:
 - README.md
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/xmonad-config#readme>
+description:         Please see the README on GitHub at <https://github.com/byhowe/xmonad#readme>
 
 dependencies:
 - base >= 4.7 && < 5
